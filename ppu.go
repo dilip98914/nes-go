@@ -12,6 +12,10 @@ type PPU struct {
 	Data    byte
 	// Last value driven onto the PPU data bus.
 	Openbus byte
+
+	Scanline int
+	Dot      int
+	Cycles   uint64
 }
 
 func (p *PPU) CPURead(addr uint16) byte {
@@ -51,4 +55,28 @@ func (p *PPU) CPUWrite(addr uint16, value byte) {
 		p.Data = value
 
 	}
+}
+
+func (p *PPU) Clock() {
+	p.Cycles++
+	p.Dot++
+	if p.Dot >= 341 {
+		p.Dot = 0
+		p.Scanline++
+
+		if p.Scanline >= 262 {
+			p.Scanline = 0
+		}
+	}
+
+	// vblank begins at scaline 241,dot1
+	if p.Scanline == 241 && p.Dot == 1 {
+		p.Status |= 0x80
+	}
+
+	// clear vblank & sprite status flags at pre render scanline
+	if p.Scanline == 261 && p.Dot == 1 {
+		p.Status &^= 0xE0
+	}
+
 }

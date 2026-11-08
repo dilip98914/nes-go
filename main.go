@@ -47,7 +47,7 @@ func main() {
 	// fmt.Printf("A:      0x%02X\n", cpu.A)
 	// fmt.Printf("Status: 0x%02X\n", cpu.Status)
 
-	const maxInstructions = 100
+	const maxInstructions = 100000
 	executed := 0
 
 	for executed < maxInstructions {
@@ -66,5 +66,11 @@ func main() {
 	fmt.Printf("SP:     0x%02X\n", cpu.SP)
 	fmt.Println("CPU cycles:", cpu.Cycles)
 	fmt.Printf("Status: 0x%02X\n", cpu.Status)
+
+	fmt.Println("\n===== PPU DEBUG =====")
+	fmt.Println("PPU Cycles:", bus.PPU.Cycles)
+	fmt.Println("Scanline:", bus.PPU.Scanline)
+	fmt.Println("Dot:", bus.PPU.Dot)
+	fmt.Printf("PPU Status: 0x%02X\n", bus.PPU.Status)
 
 }

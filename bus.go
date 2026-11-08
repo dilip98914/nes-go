@@ -58,3 +58,9 @@ func (b *Bus) CpuWrite(addr uint16, value byte) error {
 
 	return fmt.Errorf("unsupported CPU read address: 0x%04X", addr)
 }
+
+func (b *Bus) Clock(cpuCycles uint64) {
+	for i := uint64(0); i < cpuCycles*3; i++ {
+		b.PPU.Clock()
+	}
+}

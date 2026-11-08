@@ -81,6 +81,26 @@ func (cpu *CPU) Step() error {
 	case 0xAD: // LDA absolute
 		cycles = 4
 		return cpu.ExecuteLDAAbsolute()
+	case 0xCA: // DEX
+		cycles = 2
+		cpu.ExecuteDEX()
+	case 0x9A: // TXS
+		cycles = 2
+		cpu.ExecuteTXS()
+	case 0xD0: // BNE
+		branchTaken := cpu.Status&0x02 == 0
+		nextPC := cpu.PC + 1
+
+		cycles = 2
+		err = cpu.ExecuteBNE()
+
+		if err == nil && branchTaken {
+			cycles++
+
+			if nextPC&0xFF00 != cpu.PC&0xFF00 {
+				cycles++
+			}
+		}
 	case 0x10: // BPL - Branch if Plus
 		branchTaken := cpu.Status&0x80 == 0
 		nextPC := cpu.PC + 1
@@ -107,5 +127,6 @@ func (cpu *CPU) Step() error {
 		return err
 	}
 	cpu.Cycles += cycles
+	cpu.Bus.Clock(cycles)
 	return nil
 }

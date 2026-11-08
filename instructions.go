@@ -115,3 +115,41 @@ func (cpu *CPU) ExecuteBPL() error {
 	}
 	return nil
 }
+
+func (cpu *CPU) ExecuteDEX() {
+	cpu.X--
+
+	//update zero flag
+	if cpu.X == 0 {
+		cpu.Status |= 0x02
+	} else {
+		cpu.Status &^= 0x02
+
+	}
+
+	//update negative flag
+	if cpu.X&0x80 != 0 {
+		cpu.Status |= 0x80
+	} else {
+		cpu.Status &^= 0x80
+
+	}
+
+}
+
+func (cpu *CPU) ExecuteBNE() error {
+	offset, err := cpu.FetchByte()
+	if err != nil {
+		return err
+	}
+
+	// Branch when Zero flag is clear.
+	if cpu.Status&0x02 == 0 {
+		cpu.PC += uint16(int16(int8(offset)))
+	}
+
+	return nil
+}
+func (cpu *CPU) ExecuteTXS() {
+	cpu.SP = cpu.X
+}
